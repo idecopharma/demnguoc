@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLIP ĐÀO TẠO - HƯỚNG DẪN CỦA IDECO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100%;
+            overflow-y: auto;
+            box-sizing: border-box;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ecf0f1;
+        }
+
+        .home-button, .accordion, .video-button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover, .accordion:hover, .video-button:hover {
+            background-color: #2980b9;
+        }
+
+        .accordion.active {
+            background-color: #1abc9c;
+        }
+
+        .panel {
+            display: none;
+            padding: 10px;
+            background-color: #34495e;
+            border-radius: 5px;
+            margin-top: -10px;
+        }
+
+        .panel .video-button {
+            background-color: #16a085;
+            margin-bottom: 5px;
+        }
+
+        .panel .video-button:hover {
+            background-color: #0e6655;
+        }
+
+        .content {
+            margin-left: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ecf0f1;
+            width: calc(100% - 300px);
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .video-container {
+            background-color: #fff;
+            width: 800px;
+            height: 460px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            resize: both;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="sidebar">
+        <h1>CLIP CHỈ DẪN CÔNG VIỆC</h1>
+        <button class="home-button" onclick="window.location.href='https://erp-ideco.skyit.vn/#/app/dashboard/main'">
+            Trang Chủ
+        </button>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Tìm video..." onkeyup="filterVideos()">
+        </div>
+        <button class="accordion">Danh mục 1: VIDEDO HƯỚNG DẤN CHO BẠN MỚI HỘI NHẬP TỐT HƠN</button>
+        <div class="panel">
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/X4MSj3LKRQM')">
+                GIỚI THIỆU ERP TỔNG QUAN CỦA CÔNG TY CẦN XEM
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/5JftBEBbpSA')">
+                Chia sẽ đầu tiên cho em nhân viên ngày đầu gia nhập công ty (Phần 1)
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/sX3WJKNxyco')">
+                Chia sẽ vài điểm cho em nhân viên ngày đầu gia nhập công ty  (phần 2)
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/LYsjF4CsyS8')">
+                Nội dung cần nắm sau 3 tuần
+            </button>
+        </div>
+        <button class="accordion">Danh mục 2: KINH NGHIỆM XỬ LÝ CÔNG VIỆC NÊN XEM QUA</button>
+        <div class="panel">
+
+<button class="video-button" onclick="playVideo('https://www.youtube.com/embed/yJwTguvTt5g')">
+               Phụ trách điều phối & phát triển kinh doanh chuỗi Nhà Thuốc phải làm thế nào?
+            </button>
+<button class="video-button" onclick="playVideo('https://www.youtube.com/embed/vF_mChVIn-k')">
+             Phụ trách điều phối & phát triển kinh doanh thì hiểu thế nào ?
+            </button>
+<button class="video-button" onclick="playVideo('https://www.youtube.com/embed/413w8wcGSWE')">
+             Quy định KPI - Cách tính thưởng KPI - Hoa hồng- Thưởng khác cần xem
+            </button>
+<button class="video-button" onclick="playVideo('https://www.youtube.com/embed/Q7d3tTxMIK4')">
+               Chia sẽ cho vài bí quyết bán hàng khi chưa có kinh nghiệm trong lĩnh vực dược?
+            </button>
+			
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/tZgs2Vx9fpw')">
+                Cách phát triển khách hàng mới như thế nào?
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/3o3TvmNh9_k')">
+                Cách quản lý khách hàng được giao làm thế nào tốt?
+            </button>
+<button class="video-button" onclick="playVideo('https://www.youtube.com/embed/NfJwRPZ1ZOc')">
+               3 loại khai báo phải nắm và áp dụng tốt  để chốt Sales tốt hơn ?
+            </button>
+			
+			<button class="video-button" onclick="playVideo('https://www.youtube.com/embed/Q7d3tTxMIK4')">
+               Chia sẽ cho vài bí quyết bán hàng khi chưa có kinh nghiệm trong lĩnh vực dược?
+            </button>
+					
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/MeBvpkvbxkw')">
+                Cách xử lý tình huống telesales phải biết (phần 1)
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/faP8VsmpKZs')">
+                Cách xử lý tình huống telesales phải biết (phần 2)
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/mdT_zPbQAj8')">
+                Cách xử lý tình huống telesales phải biết (phần 3)
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/XGEVSAcCVAE')">
+                Cách xử lý tình huống telesales phải biết (phần 4)
+            </button>
+        </div>
+        <button class="accordion">Danh mục 3: QUY ĐỊNH- QUY TRÌNH CẦN XEM NẮM ĐỂ LÀM TỐT</button>
+        <div class="panel">
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/UFAq4FIIWx8')">
+                Quy định cần nắm vững để áp dụng đúng và tốt 
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/-e8_IUZaOc')">
+                Lý do làm việc không hiệu quả  vì thiếu nguyên tắc này
+            </button>
+        </div>
+        <button class="accordion">Danh mục 4: CÁC HƯỚNG DẪN ỨNG DỤNG CÔNG CỤ PHẦN MỀM TRONG QUẢN LÝ</button>
+        <div class="panel">
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/GbeN9uOxqic')">
+                Cách cập nhật đơn hàng trên Quản lý đặt hàng chuỗi
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/46uSG2LJeZc')">
+                Cách ứng dụng quản lý khách hàng đặt hàng
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/z9IOirt_Lwg')">
+                Cách đồng bộ file dữ liệu tử ERP vào báo cáo KPI tháng
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/Xm39EaPJb_8')">
+                Hướng dẫn cách lập- báo cáo KPI
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/Ao4HH4ALyRc')">
+                Hướng dẫn mở 2 file json trên 2 ứng dụng quản lý kh và quản lý đặt hàng chuỗi
+            </button>
+        </div>
+        <button class="accordion">Danh mục 5: VIDEO CLIP QUẢNG CÁO - GIỚI THIỆU SẢN PHẨM </button>
+        <div class="panel">
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/2U0S1-eClhY')">
+                Clip giới thiệu UVS BIONEE
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/TcwVAvIOqp8')">
+                Clip giới thiệu giảm nám UVS Cremelas
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/FBYLl2gb76I')">
+                Clip giới thiệu kem chống hăm UVS Raskee
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/pU-lGYi36jQ')">
+                Clip chia sẽ tư vấn bệnh nấm móng - UVS Naillcare
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/zT9SjcZ3MUI')">
+                Clip chia sẽ tư vấn UVS Apigen gel
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/xsBp530AZRA')">
+                Clip chia sẽ tư vấn nám da & UVS Cremelas
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/Dr8bBaaYb08')">
+                Clip chia sẽ tư vấn giảm rụng tóc UVS Bionee
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/aOcD5LxJ18E')">
+                Clip chia sẽ tư vấn mờ sẹo mụn- giảm mụn UVS Garcinar gel
+            </button>
+        </div>
+        <button class="accordion">Danh mục 6: VIDEO CA NHẠC DO ANH TRIẾT SOẠN - THƯ GIÃN </button>
+        <div class="panel">
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/USkWIg-fPzs')">
+                Xuân tương tư - ST:MTriet
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/QKcp5_PZdH0')">
+                IDECO vững bước lên
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/zzCRc-OgOUE')">
+                Nhớ Em - sáng tác MTriet
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/dmnEPYYBwYk')">
+                Tình nhớ - sáng tác: MTriet
+            </button>
+        </div>
+        <button class="accordion">Danh mục 7: Clip chữa lành- giá trị cuộc sống - chia sẽ</button>
+        <div class="panel">
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/Th_g7mVNW8I')">
+                "Hãy chấp nhận nếu không thay đổi được để hạnh phúc"
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/v0uNQIRfDaA')">
+                "Hãy biết cảm ơn và lời xin lỗi"
+            </button>
+            <button class="video-button" onclick="playVideo('https://www.youtube.com/embed/C_BfxFFrTy8')">
+                "Buông bỏ có dễ không như mình nói"
+            </button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="video-container" id="videoContainer">
+            <iframe id="videoPlayer" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    function playVideo(videoUrl) {
+        var videoContainer = document.getElementById('videoContainer');
+        var videoPlayer = document.getElementById('videoPlayer');
+        videoPlayer.src = videoUrl;
+        videoContainer.style.display = 'block';
+    }
+
+    var acc = document.getElementsByClassName("accordion");
+    for (var i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            panel.style.display = (panel.style.display === "block") ? "none" : "block";
+        });
+    }
+
+    function filterVideos() {
+        var input = document.getElementById('searchInput');
+        var filter = input.value.toLowerCase();
+        var videoButtons = document.querySelectorAll('.video-button');
+
+        videoButtons.forEach(function(button) {
+            var text = button.textContent || button.innerText;
+            button.style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+        });
+    }
+</script>
+
+</body>
+</html>
