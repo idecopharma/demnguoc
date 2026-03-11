@@ -1,418 +1,931 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏋️ GymPro - Đếm Ngược & Hướng Dẫn</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&family=Inter:wght@400;600&display=swap');
-        
-        :root {
-            --primary: #0077cc;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #e6f3ff, #f0f8ff);
-            color: #1a3c5e;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
-        
-        .tabs {
-            display: flex;
-            background: white;
-            box-shadow: 0 4px 15px rgba(0,119,204,0.15);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .tab-btn {
-            flex: 1;
-            padding: 18px;
-            font-size: 1.2em;
-            font-weight: 600;
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-            border-radius: 0 0 10px 10px;
-        }
-        
-        .container {
-            max-width: 620px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        
-        /* ==================== TIMER TAB ==================== */
-        .timer-tab {
-            background: white;
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,119,204,0.1);
-        }
-        
-        h1 { font-size: 2.4em; text-align: center; margin: 0 0 20px; color: var(--primary); }
-        
-        #display {
-            font-size: 7em;
-            font-family: 'Roboto Mono', monospace;
-            text-align: center;
-            margin: 20px 0;
-            color: #1a3c5e;
-            text-shadow: 0 0 30px rgba(0,119,204,0.3);
-        }
-        
-        input { background: #f0f8ff; color: #1a3c5e; border: 3px solid var(--primary); }
-        
-        button {
-            font-size: 1.25em;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-weight: bold;
-        }
-        
-        .progress { background: var(--primary); }
-        
-        /* ==================== GUIDE TAB ==================== */
-        .guide-tab {
-            display: none;
-            background: white;
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,119,204,0.1);
-        }
-        
-        .muscle-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .exercise-card {
-            background: #f8fbff;
-            border-radius: 18px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,119,204,0.08);
-            transition: transform 0.3s;
-        }
-        
-        .exercise-card:hover {
-            transform: translateY(-8px);
-        }
-        
-        .demo {
-            width: 100%;
-            height: 220px;
-            background: #f0f8ff;
-            border-radius: 16px;
-            position: relative;
-            margin: 15px 0;
-            overflow: hidden;
-            border: 3px solid #e6f3ff;
-        }
-        
-        /* ==================== ANIMATIONS ==================== */
-        /* Ngực - Push-up */
-        .demo.pushup .person {
-            position: absolute;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            animation: pushup 1.4s infinite ease-in-out;
-        }
-        @keyframes pushup {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(45px); }
-        }
-        
-        /* Vai - Shoulder Press */
-        .demo.shoulder .arm {
-            animation: shoulderPress 1.6s infinite ease-in-out;
-        }
-        @keyframes shoulderPress {
-            0%, 100% { transform: rotate(-30deg); }
-            50% { transform: rotate(80deg); }
-        }
-        
-        /* Tay - Bicep Curl */
-        .demo.bicep .forearm {
-            animation: bicepCurl 1.3s infinite ease-in-out;
-        }
-        @keyframes bicepCurl {
-            0%, 100% { transform: rotate(20deg); }
-            50% { transform: rotate(-80deg); }
-        }
-        
-        /* Bụng - Crunch */
-        .demo.crunch .torso {
-            animation: crunch 1.5s infinite ease-in-out;
-        }
-        @keyframes crunch {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(-35deg); }
-        }
-        
-        .stick-figure {
-            position: absolute;
-            left: 50%;
-            top: 40px;
-            width: 80px;
-            height: 180px;
-            transform: translateX(-50%);
-        }
-        
-        .head { width: 30px; height: 30px; background: #1a3c5e; border-radius: 50%; position: absolute; left: 25px; }
-        .torso { width: 12px; height: 80px; background: #1a3c5e; position: absolute; left: 34px; top: 30px; }
-        .arm { width: 8px; height: 60px; background: #1a3c5e; position: absolute; top: 38px; transform-origin: top center; }
-        .left-arm { left: 25px; }
-        .right-arm { right: 25px; }
-        .forearm { width: 8px; height: 50px; background: #1a3c5e; position: absolute; top: 55px; transform-origin: top center; }
-        .leg { width: 10px; height: 70px; background: #1a3c5e; position: absolute; top: 105px; }
-        .left-leg { left: 25px; }
-        .right-leg { right: 25px; }
-        
-        .status { font-size: 1.3em; text-align: center; margin: 15px 0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GYM PRO — Hướng Dẫn Tập Luyện</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F1EB;--bg2:#EDE8E1;--bg3:#E4DDD4;
+  --card:#FDFAF6;--card2:#F7F2EC;
+  --or1:#E85D04;--or2:#F48C06;--or3:#FAA307;
+  --red:#D62828;--grn:#2D9E6B;--blu:#1A6FA8;
+  --dk:#1A1208;--dk2:#2D2416;--tx2:#5C4A30;--mt:#9C8A72;
+  --bd:rgba(232,93,4,0.14);--bd2:rgba(232,93,4,0.28);
+  --sh:0 4px 24px rgba(26,18,8,0.07);
+  --sh2:0 12px 40px rgba(232,93,4,0.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--dk);font-family:'Outfit',sans-serif;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 15% 20%,rgba(232,93,4,0.07) 0%,transparent 55%),
+    radial-gradient(ellipse at 85% 75%,rgba(244,140,6,0.07) 0%,transparent 55%);
+  pointer-events:none;z-index:0;}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:200;height:68px;
+  background:rgba(245,241,235,0.93);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--bd2);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;box-shadow:0 2px 16px rgba(26,18,8,0.06);}
+.logo{display:flex;align-items:center;gap:.75rem;}
+.logo-sq{width:40px;height:40px;border-radius:9px;
+  background:linear-gradient(135deg,var(--or1),var(--or2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',cursive;font-size:1.4rem;color:#fff;
+  box-shadow:0 4px 12px rgba(232,93,4,0.32);}
+.logo-t{font-family:'Bebas Neue',cursive;font-size:1.75rem;letter-spacing:.07em;color:var(--dk);}
+.logo-t span{color:var(--or1);}
+.hdr-r{display:flex;align-items:center;gap:1rem;}
+.badge-time{background:var(--card);border:1.5px solid var(--bd2);border-radius:10px;
+  padding:.35rem .9rem;text-align:center;}
+.bt-lbl{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mt);}
+.bt-val{font-family:'Bebas Neue',cursive;font-size:1.4rem;color:var(--or1);line-height:1.1;}
+
+/* HERO */
+.hero{position:relative;z-index:1;max-width:1280px;margin:0 auto;
+  padding:3.5rem 2.5rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;gap:2rem;}
+.hero h1{font-family:'Bebas Neue',cursive;font-size:clamp(3rem,6.5vw,5.8rem);
+  line-height:.93;letter-spacing:.03em;color:var(--dk);}
+.hero h1 em{font-style:normal;-webkit-text-stroke:2px var(--or1);color:transparent;}
+.hero-sub{margin-top:.8rem;font-size:.95rem;color:var(--mt);font-weight:400;}
+.pills{display:flex;gap:.45rem;margin-top:1rem;flex-wrap:wrap;}
+.pill{padding:.25rem .75rem;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+.p-o{background:rgba(232,93,4,.1);color:var(--or1);}
+.p-g{background:rgba(45,158,107,.1);color:var(--grn);}
+.p-b{background:rgba(26,111,168,.1);color:var(--blu);}
+.hero-deco{font-family:'Bebas Neue',cursive;font-size:min(9rem,18vw);
+  color:rgba(232,93,4,.06);line-height:1;user-select:none;letter-spacing:-.05em;
+  flex-shrink:0;}
+
+/* NAV */
+.mnav{position:relative;z-index:1;max-width:1280px;margin:0 auto;
+  display:flex;gap:.45rem;padding:0 2.5rem 1.8rem;overflow-x:auto;scrollbar-width:none;}
+.mnav::-webkit-scrollbar{display:none;}
+.mb{display:flex;align-items:center;gap:.45rem;padding:.6rem 1.2rem;border-radius:11px;
+  border:1.5px solid var(--bd2);background:var(--card);color:var(--mt);
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;
+  white-space:nowrap;transition:all .22s;box-shadow:var(--sh);}
+.mb:hover{border-color:var(--or1);color:var(--or1);transform:translateY(-2px);}
+.mb.on{background:linear-gradient(135deg,var(--or1),var(--or2));border-color:transparent;
+  color:#fff;box-shadow:var(--sh2);transform:translateY(-2px);}
+
+/* MAIN */
+.main{position:relative;z-index:1;max-width:1280px;margin:0 auto;
+  padding:0 2.5rem 4rem;display:grid;grid-template-columns:1fr 355px;gap:2rem;align-items:start;}
+
+/* SECTION */
+.msec{display:none;flex-direction:column;gap:1.1rem;}
+.msec.on{display:flex;}
+.sh{display:flex;align-items:flex-end;gap:.8rem;padding-bottom:.8rem;
+  border-bottom:2px solid var(--bd2);margin-bottom:.2rem;}
+.sh-n{font-family:'Bebas Neue',cursive;font-size:4.5rem;color:rgba(232,93,4,.1);line-height:1;}
+.sh-tag{font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--or1);}
+.sh-title{font-family:'Bebas Neue',cursive;font-size:2rem;letter-spacing:.04em;color:var(--dk);line-height:1;}
+
+/* CARD */
+.ec{background:var(--card);border:1.5px solid var(--bd);border-radius:15px;overflow:hidden;
+  display:grid;grid-template-columns:225px 1fr;min-height:170px;cursor:pointer;
+  transition:all .28s;box-shadow:var(--sh);position:relative;}
+.ec::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--or1),var(--or2));
+  transform:scaleX(0);transform-origin:left;transition:transform .28s;}
+.ec:hover{border-color:var(--bd2);transform:translateY(-4px);box-shadow:var(--sh2);}
+.ec:hover::after{transform:scaleX(1);}
+.ev{background:linear-gradient(135deg,#FFF4E8,#FFE5CC);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:.8rem;}
+.ev::after{content:'';position:absolute;bottom:-15px;right:-15px;width:80px;height:80px;
+  border-radius:50%;background:radial-gradient(circle,rgba(232,93,4,.1),transparent 70%);}
+.ev canvas{width:200px;height:145px;display:block;}
+.ei{padding:1.2rem 1.4rem;display:flex;flex-direction:column;gap:.35rem;}
+.ebadge{display:inline-flex;align-items:center;gap:.25rem;font-size:.58rem;font-weight:700;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--or1);
+  background:rgba(232,93,4,.08);padding:.18rem .55rem;border-radius:4px;width:fit-content;}
+.ename{font-family:'Bebas Neue',cursive;font-size:1.65rem;letter-spacing:.04em;color:var(--dk);line-height:1;}
+.edesc{font-size:.8rem;color:var(--tx2);line-height:1.62;margin-top:.08rem;}
+.estats{display:flex;gap:1.1rem;margin-top:.45rem;}
+.est{display:flex;flex-direction:column;}
+.esv{font-family:'Bebas Neue',cursive;font-size:1.45rem;color:var(--or1);line-height:1;}
+.esl{font-size:.56rem;font-weight:700;color:var(--mt);letter-spacing:.1em;text-transform:uppercase;}
+.ebtn{margin-top:auto;align-self:flex-start;padding:.42rem 1rem;border-radius:8px;border:none;
+  background:linear-gradient(135deg,var(--or1),var(--or2));color:#fff;
+  font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.07em;
+  cursor:pointer;transition:all .18s;box-shadow:0 3px 10px rgba(232,93,4,.28);}
+.ebtn:hover{filter:brightness(1.09);transform:scale(1.04);}
+
+/* TIMER */
+.tp{position:sticky;top:84px;background:var(--card);border:1.5px solid var(--bd2);
+  border-radius:18px;padding:1.6rem;box-shadow:var(--sh2);display:flex;flex-direction:column;gap:1.2rem;}
+.tp::before{content:'';display:block;height:4px;background:linear-gradient(90deg,var(--or1),var(--or2),var(--or3));
+  border-radius:4px 4px 0 0;margin:-1.6rem -1.6rem 0;}
+.tp-title{font-family:'Bebas Neue',cursive;font-size:.95rem;letter-spacing:.2em;color:var(--mt);text-align:center;margin-top:.4rem;}
+.ce{background:linear-gradient(135deg,#FFF4E8,#FFE5CC);border-radius:11px;
+  padding:.9rem 1.1rem;border-left:4px solid var(--or1);}
+.ce-lbl{font-size:.56rem;font-weight:700;letter-spacing:.18em;color:var(--or1);text-transform:uppercase;margin-bottom:.15rem;}
+.ce-name{font-family:'Bebas Neue',cursive;font-size:1.25rem;color:var(--dk);line-height:1;}
+.ce-sub{font-size:.7rem;color:var(--tx2);margin-top:.15rem;font-weight:500;}
+
+/* Circular timer */
+.tw{position:relative;width:195px;height:195px;margin:0 auto;}
+.tsvg{width:100%;height:100%;transform:rotate(-90deg);}
+.t-track{fill:none;stroke:var(--bg3);stroke-width:7;}
+.t-arc{fill:none;stroke:url(#tg);stroke-width:7;stroke-linecap:round;
+  stroke-dasharray:534;stroke-dashoffset:534;transition:stroke-dashoffset 1s linear;
+  filter:drop-shadow(0 0 6px rgba(232,93,4,.38));}
+.t-arc.warn{stroke:url(#tgr);}
+.tc{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.tt{font-family:'Bebas Neue',cursive;font-size:3rem;line-height:1;color:var(--dk);letter-spacing:.04em;}
+.tt.warn{color:var(--red);animation:blink .45s ease-in-out infinite alternate;}
+@keyframes blink{from{opacity:1;}to{opacity:.45;}}
+.tp-ph{font-size:.58rem;font-weight:700;letter-spacing:.2em;color:var(--mt);text-transform:uppercase;margin-top:.1rem;}
+
+/* Sound */
+.snd-row{display:flex;align-items:center;justify-content:space-between;}
+.snd-lbl{font-size:.7rem;font-weight:600;color:var(--mt);}
+.snd-btn{display:flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:20px;
+  border:1.5px solid var(--bd2);background:transparent;color:var(--mt);font-size:.7rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.snd-btn.on{background:rgba(45,158,107,.1);border-color:var(--grn);color:var(--grn);}
+
+/* Presets */
+.presets{display:grid;grid-template-columns:repeat(4,1fr);gap:.38rem;}
+.prs{padding:.45rem .15rem;border-radius:7px;border:1.5px solid var(--bd);background:var(--card2);
+  color:var(--mt);font-family:'Outfit',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .18s;text-align:center;}
+.prs:hover,.prs.on{background:rgba(232,93,4,.09);border-color:var(--or1);color:var(--or1);}
+
+/* Controls */
+.tctrl{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;}
+.tbtn{padding:.6rem;border-radius:9px;border:1.5px solid var(--bd2);background:var(--card2);
+  color:var(--tx2);font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.tbtn:hover{border-color:var(--or1);color:var(--or1);}
+.tbtn.pri{grid-column:1/-1;background:linear-gradient(135deg,var(--or1),var(--or2));
+  border-color:transparent;color:#fff;font-size:.95rem;padding:.75rem;
+  box-shadow:0 4px 14px rgba(232,93,4,.32);}
+.tbtn.pri:hover{filter:brightness(1.08);}
+.tbtn.dng{border-color:rgba(214,40,40,.25);color:var(--red);}
+.tbtn.dng:hover{background:rgba(214,40,40,.07);}
+
+/* Sets */
+.sets-row{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;}
+.sdot{width:30px;height:30px;border-radius:50%;border:2px solid var(--bd2);
+  display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--mt);transition:all .35s;}
+.sdot.done{background:linear-gradient(135deg,var(--or1),var(--or2));border-color:transparent;color:#fff;
+  box-shadow:0 3px 8px rgba(232,93,4,.38);transform:scale(1.1);}
+.si{margin-left:auto;font-size:.68rem;font-weight:700;color:var(--mt);letter-spacing:.07em;}
+
+/* Progress */
+.prog-lbl{display:flex;justify-content:space-between;font-size:.58rem;font-weight:700;letter-spacing:.1em;color:var(--mt);text-transform:uppercase;margin-bottom:.38rem;}
+.pbar{height:5px;border-radius:5px;background:var(--bg3);overflow:hidden;position:relative;}
+.pfill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--or1),var(--or2),var(--or3));transition:width .5s ease;position:relative;}
+.pfill::after{content:'';position:absolute;right:0;top:50%;transform:translate(50%,-50%);
+  width:9px;height:9px;border-radius:50%;background:var(--or2);box-shadow:0 0 8px rgba(232,93,4,.55);}
+
+/* REST */
+.rest-ov{display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(245,241,235,.96);backdrop-filter:blur(18px);
+  flex-direction:column;align-items:center;justify-content:center;gap:.8rem;}
+.rest-ov.on{display:flex;}
+.ri{font-size:3.5rem;animation:br 2s ease-in-out infinite;}
+@keyframes br{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+.rt{font-family:'Bebas Neue',cursive;font-size:3.5rem;letter-spacing:.1em;color:var(--blu);}
+.rn{font-family:'Bebas Neue',cursive;font-size:8rem;line-height:1;color:var(--dk);}
+.rs{font-size:.88rem;color:var(--mt);font-weight:500;letter-spacing:.07em;}
+.rskip{margin-top:.8rem;padding:.65rem 2.2rem;border-radius:11px;border:2px solid var(--bd2);
+  background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.rskip:hover{background:var(--or1);border-color:var(--or1);color:#fff;}
+
+/* Flash */
+.flash{position:fixed;inset:0;background:rgba(232,93,4,.1);pointer-events:none;z-index:400;opacity:0;}
+.flash.go{animation:flsh .28s ease-out;}
+@keyframes flsh{0%{opacity:1;}100%{opacity:0;}}
+
+/* Toast */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--dk);color:#fff;padding:.75rem 1.7rem;border-radius:11px;
+  font-size:.82rem;font-weight:600;z-index:600;transition:transform .32s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 8px 28px rgba(26,18,8,.22);white-space:nowrap;}
+.toast.on{transform:translateX(-50%) translateY(0);}
+
+/* Responsive */
+@media(max-width:980px){
+  .main{grid-template-columns:1fr;}
+  .tp{position:static;}
+  header,.hero,.mnav,.main{padding-left:1.3rem;padding-right:1.3rem;}
+  .hero{flex-direction:column;padding-top:2rem;}
+  .hero-deco{font-size:6rem;}
+}
+@media(max-width:600px){
+  .ec{grid-template-columns:1fr;}
+  .ev{min-height:150px;}
+}
+</style>
 </head>
 <body>
+<div class="flash" id="flash"></div>
+<div class="rest-ov" id="restOv">
+  <div class="ri">🧘</div>
+  <div class="rt">NGHỈ NGƠI</div>
+  <div class="rn" id="restN">60</div>
+  <div class="rs">Hít thở sâu — Chuẩn bị hiệp tiếp theo</div>
+  <button class="rskip" onclick="skipRest()">Bỏ qua nghỉ →</button>
+</div>
+<div class="toast" id="toast"></div>
 
-<div class="tabs">
-    <button class="tab-btn active" onclick="switchTab(0)">⏱️ Đếm Ngược</button>
-    <button class="tab-btn" onclick="switchTab(1)">🏋️ Hướng Dẫn Động Tác</button>
+<header>
+  <div class="logo">
+    <div class="logo-sq">G</div>
+    <div class="logo-t">GYM <span>PRO</span></div>
+  </div>
+  <div class="hdr-r">
+    <div class="badge-time">
+      <div class="bt-lbl">Tổng thời gian</div>
+      <div class="bt-val" id="totalDisp">00:00</div>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>HƯỚNG DẪN<br><em>TẬP LUYỆN</em><br>ĐÚNG KỸ THUẬT</h1>
+    <p class="hero-sub">Hình ảnh động chân thực · Đồng hồ thông minh · Có âm thanh</p>
+    <div class="pills">
+      <span class="pill p-o">5 Nhóm cơ</span>
+      <span class="pill p-g">10 Bài tập</span>
+      <span class="pill p-b">Âm thanh báo hiệu</span>
+    </div>
+  </div>
+  <div class="hero-deco">💪</div>
+</section>
+
+<nav class="mnav">
+  <button class="mb on" onclick="showSec('nguc',this)">💪 NGỰC</button>
+  <button class="mb" onclick="showSec('vai',this)">🏋️ VAI</button>
+  <button class="mb" onclick="showSec('tay',this)">⚡ TAY</button>
+  <button class="mb" onclick="showSec('bung',this)">🔥 BỤNG</button>
+  <button class="mb" onclick="showSec('chan',this)">🦵 CHÂN</button>
+</nav>
+
+<main class="main">
+<div>
+
+<!-- NGỰC -->
+<div class="msec on" id="s-nguc">
+  <div class="sh"><div class="sh-n">01</div><div><div class="sh-tag">Pectoralis Major</div><div class="sh-title">CƠ NGỰC</div></div></div>
+  <div class="ec" onclick="startEx('Bench Press',45,4,10)">
+    <div class="ev"><canvas id="c0" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Cơ ngực lớn</span>
+      <div class="ename">BENCH PRESS</div>
+      <div class="edesc">Nằm ngửa, tay rộng hơn vai. Hạ tạ chạm ngực rồi đẩy thẳng lên. Lưng giữ đường cong tự nhiên, chân đặt chắc trên sàn. Siết ngực ở đỉnh.</div>
+      <div class="estats"><div class="est"><div class="esv">4</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">10</div><div class="esl">Lần/hiệp</div></div><div class="est"><div class="esv">60s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
+    </div>
+  </div>
+  <div class="ec" onclick="startEx('Push Up',40,3,15)">
+    <div class="ev"><canvas id="c1" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Ngực + Tricep + Vai</span>
+      <div class="ename">PUSH UP</div>
+      <div class="edesc">Tay rộng hơn vai, cơ thể thẳng từ đầu đến gót. Hạ ngực gần chạm sàn rồi đẩy lên. Không nhún hông, không xệ bụng. Thở đều.</div>
+      <div class="estats"><div class="est"><div class="esv">3</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">15</div><div class="esl">Lần/hiệp</div></div><div class="est"><div class="esv">45s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
+    </div>
+  </div>
 </div>
 
-<div class="container">
-
-    <!-- ==================== TIMER TAB ==================== -->
-    <div id="timer-tab" class="timer-tab">
-        <h1>🏋️ ĐẾM NGƯỢC TẬP GYM</h1>
-        
-        <div id="display">00:00</div>
-        <div class="progress" id="progress" style="height:10px;border-radius:10px;margin:15px 0;"></div>
-        
-        <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;">
-            <input type="number" id="min" value="1" style="width:80px;text-align:center;">
-            <input type="number" id="sec" value="0" style="width:80px;text-align:center;">
-        </div>
-        
-        <div style="margin:20px 0;text-align:center;">
-            <button onclick="setPreset(30)">30s</button>
-            <button onclick="setPreset(45)">45s</button>
-            <button onclick="setPreset(60)">1 phút</button>
-            <button onclick="setPreset(90)">1:30</button>
-        </div>
-        
-        <div style="display:flex;gap:12px;">
-            <button onclick="startTimer()" style="background:var(--primary);color:white;flex:1;">▶ BẮT ĐẦU</button>
-            <button onclick="pauseTimer()" style="background:#ff9500;color:white;flex:1;">⏸ TẠM DỪNG</button>
-            <button onclick="resetTimer()" style="background:#ff2d55;color:white;flex:1;">🔄 RESET</button>
-        </div>
-        
-        <div class="status" id="status">Sẵn sàng tập!</div>
+<!-- VAI -->
+<div class="msec" id="s-vai">
+  <div class="sh"><div class="sh-n">02</div><div><div class="sh-tag">Deltoid</div><div class="sh-title">CƠ VAI</div></div></div>
+  <div class="ec" onclick="startEx('Overhead Press',40,4,8)">
+    <div class="ev"><canvas id="c2" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Deltoid trước + Tricep</span>
+      <div class="ename">OVERHEAD PRESS</div>
+      <div class="edesc">Đứng chắc, tạ ngang tai. Đẩy thẳng lên đầu, siết bụng tránh ngã lưng. Hạ tạ chậm và kiểm soát. Không khóa khuỷu ở đỉnh.</div>
+      <div class="estats"><div class="est"><div class="esv">4</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">8</div><div class="esl">Lần/hiệp</div></div><div class="est"><div class="esv">90s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
     </div>
-
-    <!-- ==================== GUIDE TAB ==================== -->
-    <div id="guide-tab" class="guide-tab">
-        <h2 style="text-align:center;margin-bottom:25px;color:var(--primary);">🏋️ HƯỚNG DẪN ĐỘNG TÁC</h2>
-        
-        <div class="muscle-grid">
-            
-            <!-- NGỰC -->
-            <div class="exercise-card">
-                <h3>Ngực - Hít đất</h3>
-                <div class="demo pushup">
-                    <div class="stick-figure">
-                        <div class="head"></div>
-                        <div class="torso"></div>
-                        <div class="arm left" style="transform:rotate(-25deg);"></div>
-                        <div class="arm right" style="transform:rotate(25deg);"></div>
-                        <div class="leg left"></div>
-                        <div class="leg right"></div>
-                    </div>
-                </div>
-                <p>3 set × 10-15 reps<br><small>Hạ ngực sát sàn, đẩy mạnh lên</small></p>
-                <button onclick="useExerciseTimer(45, 'Ngực - Hít đất')" style="background:var(--primary);color:white;width:100%;">Dùng timer cho bài này</button>
-            </div>
-            
-            <!-- VAI -->
-            <div class="exercise-card">
-                <h3>Vai - Nâng tạ vai</h3>
-                <div class="demo shoulder">
-                    <div class="stick-figure">
-                        <div class="head"></div>
-                        <div class="torso"></div>
-                        <div class="arm left" style="height:55px;left:22px;"></div>
-                        <div class="arm right" style="height:55px;right:22px;"></div>
-                        <div class="leg left"></div>
-                        <div class="leg right"></div>
-                    </div>
-                </div>
-                <p>3 set × 12 reps<br><small>Nâng tạ lên qua đầu</small></p>
-                <button onclick="useExerciseTimer(40, 'Vai - Nâng tạ vai')" style="background:var(--primary);color:white;width:100%;">Dùng timer cho bài này</button>
-            </div>
-            
-            <!-- TAY -->
-            <div class="exercise-card">
-                <h3>Tay - Cuốn tạ tay</h3>
-                <div class="demo bicep">
-                    <div class="stick-figure">
-                        <div class="head"></div>
-                        <div class="torso"></div>
-                        <div class="arm left" style="transform:rotate(30deg);">
-                            <div class="forearm" style="left:-4px;"></div>
-                        </div>
-                        <div class="arm right" style="transform:rotate(-30deg);">
-                            <div class="forearm" style="right:-4px;"></div>
-                        </div>
-                        <div class="leg left"></div>
-                        <div class="leg right"></div>
-                    </div>
-                </div>
-                <p>3 set × 12 reps mỗi tay<br><small>Cuốn tạ lên vai</small></p>
-                <button onclick="useExerciseTimer(35, 'Tay - Cuốn tạ tay')" style="background:var(--primary);color:white;width:100%;">Dùng timer cho bài này</button>
-            </div>
-            
-            <!-- BỤNG -->
-            <div class="exercise-card">
-                <h3>Bụng - Gập bụng</h3>
-                <div class="demo crunch">
-                    <div class="stick-figure">
-                        <div class="head"></div>
-                        <div class="torso"></div>
-                        <div class="arm left" style="transform:rotate(-20deg);"></div>
-                        <div class="arm right" style="transform:rotate(20deg);"></div>
-                        <div class="leg left"></div>
-                        <div class="leg right"></div>
-                    </div>
-                </div>
-                <p>3 set × 20 reps<br><small>Gập người lên, siết bụng</small></p>
-                <button onclick="useExerciseTimer(50, 'Bụng - Gập bụng')" style="background:var(--primary);color:white;width:100%;">Dùng timer cho bài này</button>
-            </div>
-        </div>
+  </div>
+  <div class="ec" onclick="startEx('Lateral Raise',20,3,12)">
+    <div class="ev"><canvas id="c3" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Deltoid giữa</span>
+      <div class="ename">LATERAL RAISE</div>
+      <div class="edesc">Nâng hai tay sang ngang đến ngang vai. Khuỷu hơi cong, ngón út nhỉnh hơn ngón cái. Hạ chậm 3 giây — phần eccentric quan trọng nhất.</div>
+      <div class="estats"><div class="est"><div class="esv">3</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">12</div><div class="esl">Lần/hiệp</div></div><div class="est"><div class="esv">45s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
     </div>
+  </div>
 </div>
+
+<!-- TAY -->
+<div class="msec" id="s-tay">
+  <div class="sh"><div class="sh-n">03</div><div><div class="sh-tag">Bicep & Tricep</div><div class="sh-title">CƠ TAY</div></div></div>
+  <div class="ec" onclick="startEx('Bicep Curl',30,3,12)">
+    <div class="ev"><canvas id="c4" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Bicep brachii</span>
+      <div class="ename">BICEP CURL</div>
+      <div class="edesc">Khuỷu ép sát sườn, cuộn tạ lên đến vai. Siết bicep ở đỉnh 1 giây. Hạ chậm hoàn toàn. Không lắc người để tạo đà — mọi lực phải từ cơ tay.</div>
+      <div class="estats"><div class="est"><div class="esv">3</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">12</div><div class="esl">Lần/hiệp</div></div><div class="est"><div class="esv">45s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
+    </div>
+  </div>
+  <div class="ec" onclick="startEx('Tricep Dip',35,3,10)">
+    <div class="ev"><canvas id="c5" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Tricep brachii</span>
+      <div class="ename">TRICEP DIP</div>
+      <div class="edesc">Tay chống thanh song song, khuỷu hướng sau. Hạ đến khuỷu 90° rồi đẩy lên siết tricep. Thân thẳng đứng — không ngả người ra trước.</div>
+      <div class="estats"><div class="est"><div class="esv">3</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">10</div><div class="esl">Lần/hiệp</div></div><div class="est"><div class="esv">60s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
+    </div>
+  </div>
+</div>
+
+<!-- BỤNG -->
+<div class="msec" id="s-bung">
+  <div class="sh"><div class="sh-n">04</div><div><div class="sh-tag">Rectus Abdominis</div><div class="sh-title">CƠ BỤNG</div></div></div>
+  <div class="ec" onclick="startEx('Crunch',0,4,20)">
+    <div class="ev"><canvas id="c6" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Bụng trên</span>
+      <div class="ename">CRUNCH</div>
+      <div class="edesc">Nằm ngửa, gối gấp 90°. Tay nhẹ sau đầu — không kéo cổ. Cuộn vai lên, thở ra mạnh, siết bụng tối đa. Hạ chậm hít vào.</div>
+      <div class="estats"><div class="est"><div class="esv">4</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">20</div><div class="esl">Lần/hiệp</div></div><div class="est"><div class="esv">30s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
+    </div>
+  </div>
+  <div class="ec" onclick="startEx('Plank',60,4,1)">
+    <div class="ev"><canvas id="c7" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Core sâu</span>
+      <div class="ename">PLANK</div>
+      <div class="edesc">Chống cẳng tay, người thẳng đầu đến gót. Siết bụng, mông, đùi cùng lúc. Thở đều và sâu. Không nhô hông lên hay hạ bụng xuống.</div>
+      <div class="estats"><div class="est"><div class="esv">4</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">60s</div><div class="esl">Giữ</div></div><div class="est"><div class="esv">45s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHÂN -->
+<div class="msec" id="s-chan">
+  <div class="sh"><div class="sh-n">05</div><div><div class="sh-tag">Quadriceps & Glutes</div><div class="sh-title">CƠ CHÂN</div></div></div>
+  <div class="ec" onclick="startEx('Barbell Squat',50,4,10)">
+    <div class="ev"><canvas id="c8" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Quads + Glutes + Hamstrings</span>
+      <div class="ename">BARBELL SQUAT</div>
+      <div class="edesc">Chân rộng bằng vai, tạ trên vai trên. Hạ như ngồi ghế, gối theo hướng mũi chân. Đứng lên đẩy qua gót. Ngực thẳng, không khom lưng.</div>
+      <div class="estats"><div class="est"><div class="esv">4</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">10</div><div class="esl">Lần/hiệp</div></div><div class="est"><div class="esv">90s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
+    </div>
+  </div>
+  <div class="ec" onclick="startEx('Lunges',30,3,12)">
+    <div class="ev"><canvas id="c9" width="200" height="145"></canvas></div>
+    <div class="ei">
+      <span class="ebadge">● Quads + Glutes + Calves</span>
+      <div class="ename">LUNGES</div>
+      <div class="edesc">Bước dài ra trước, hạ gối sau 2–3cm trên sàn. Lưng thẳng đứng. Đẩy lên bằng chân trước. Đổi chân — mỗi bên 12 lần.</div>
+      <div class="estats"><div class="est"><div class="esv">3</div><div class="esl">Hiệp</div></div><div class="est"><div class="esv">12</div><div class="esl">Lần/chân</div></div><div class="est"><div class="esv">60s</div><div class="esl">Nghỉ</div></div></div>
+      <button class="ebtn">▶ Bắt đầu</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /left -->
+
+<!-- TIMER PANEL -->
+<aside class="tp">
+  <div class="tp-title">⏱ ĐỒNG HỒ TẬP LUYỆN</div>
+  <div class="ce">
+    <div class="ce-lbl">Bài tập hiện tại</div>
+    <div class="ce-name" id="ceName">Chọn bài tập →</div>
+    <div class="ce-sub" id="ceSub">Nhấn vào thẻ bài tập để bắt đầu</div>
+  </div>
+  <div class="tw">
+    <svg class="tsvg" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#E85D04"/>
+          <stop offset="100%" style="stop-color:#FAA307"/>
+        </linearGradient>
+        <linearGradient id="tgr" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#D62828"/>
+          <stop offset="100%" style="stop-color:#E85D04"/>
+        </linearGradient>
+      </defs>
+      <circle class="t-track" cx="50" cy="50" r="42"/>
+      <circle class="t-arc" cx="50" cy="50" r="42" id="tArc"/>
+    </svg>
+    <div class="tc">
+      <div class="tt" id="tDisp">00:00</div>
+      <div class="tp-ph" id="tPhase">READY</div>
+    </div>
+  </div>
+  <div class="snd-row">
+    <span class="snd-lbl">🔔 Âm thanh báo hiệu</span>
+    <button class="snd-btn on" id="sndBtn" onclick="toggleSnd()">🔊 BẬT</button>
+  </div>
+  <div>
+    <div style="font-size:.58rem;font-weight:700;letter-spacing:.15em;color:var(--mt);text-transform:uppercase;margin-bottom:.45rem;">Chọn nhanh</div>
+    <div class="presets">
+      <button class="prs" onclick="setP(30,this)">:30</button>
+      <button class="prs" onclick="setP(45,this)">:45</button>
+      <button class="prs" onclick="setP(60,this)">1:00</button>
+      <button class="prs" onclick="setP(90,this)">1:30</button>
+    </div>
+  </div>
+  <div class="tctrl">
+    <button class="tbtn pri" id="startBtn" onclick="toggleTimer()">▶ BẮT ĐẦU</button>
+    <button class="tbtn" onclick="addT(15)">+15s</button>
+    <button class="tbtn dng" onclick="resetT()">↺ Reset</button>
+  </div>
+  <div>
+    <div style="font-size:.58rem;font-weight:700;letter-spacing:.15em;color:var(--mt);text-transform:uppercase;margin-bottom:.5rem;">Tiến trình hiệp</div>
+    <div class="sets-row" id="sRow">
+      <div class="sdot" id="d1">1</div><div class="sdot" id="d2">2</div>
+      <div class="sdot" id="d3">3</div><div class="sdot" id="d4">4</div>
+      <div class="si" id="sInfo">0/4</div>
+    </div>
+  </div>
+  <div>
+    <div class="prog-lbl"><span>Tiến độ tổng</span><span id="pPct">0%</span></div>
+    <div class="pbar"><div class="pfill" id="pFill" style="width:0%"></div></div>
+  </div>
+</aside>
+</main>
 
 <script>
-    // === TIMER LOGIC (giữ nguyên phiên bản đã fix beep) ===
-    let timerInterval, totalSeconds = 0, remainingSeconds = 0, isRunning = false, originalTime = 0;
-    let audioContext;
-    
-    const display = document.getElementById('display');
-    const progressBar = document.getElementById('progress');
-    const status = document.getElementById('status');
+// ===== CANVAS DRAWING HELPERS =====
+const SK='#C8704A',SK2='#A85030'; // skin
+const CL='#2C2010',CL2='#4A3820'; // clothing dark
+const OR='#E85D04',OR2='#FAA307'; // orange highlight
+const EQ='#8A7A65',EQ2='#6A5A48'; // equipment
+const FL='#D0C8BC'; // floor
 
-    function initAudio() {
-        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioContext.state === 'suspended') audioContext.resume();
-    }
-    
-    function playBeep() {
-        initAudio();
-        const osc = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        osc.type = 'sine'; osc.frequency.value = 950;
-        gain.gain.value = 0.9;
-        osc.connect(gain); gain.connect(audioContext.destination);
-        const now = audioContext.currentTime;
-        osc.start(now); osc.stop(now + 0.18);
-    }
+function L(cx,x1,y1,x2,y2,w,c){cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x2,y2);cx.strokeStyle=c;cx.lineWidth=w;cx.lineCap='round';cx.stroke();}
+function C(cx,x,y,r,f,s,sw){cx.beginPath();cx.arc(x,y,r,0,Math.PI*2);if(f){cx.fillStyle=f;cx.fill();}if(s){cx.strokeStyle=s;cx.lineWidth=sw||1.5;cx.stroke();}}
+function R(cx,x,y,w,h,r,f,s,sw){cx.beginPath();if(r>0){cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);}else cx.rect(x,y,w,h);if(f){cx.fillStyle=f;cx.fill();}if(s){cx.strokeStyle=s;cx.lineWidth=sw||1;cx.stroke();}}
+function SH(cx,x,y,rx,ry){cx.beginPath();cx.ellipse(x,y,rx,ry,0,0,Math.PI*2);cx.fillStyle='rgba(0,0,0,0.07)';cx.fill();}
+function HEAD(cx,x,y,r,dir){
+  // body
+  C(cx,x,y,r,SK,SK2,1.2);
+  // hair
+  cx.save();cx.beginPath();cx.arc(x,y,r+.5,Math.PI+.3,-.3);cx.fillStyle='#1A1208';cx.fill();cx.restore();
+  // eye
+  C(cx,x+dir*r*.5,y+r*.15,1.8,'#1A1208',null);
+}
 
-    function formatTime(s) {
-        return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
-    }
+// BENCH PRESS
+function bench(cx,t){
+  cx.clearRect(0,0,200,145);
+  const lift=Math.sin(t)*22, barY=60+lift;
+  SH(cx,100,142,55,6);
+  // bench
+  L(cx,52,120,48,142,6,EQ2); L(cx,148,120,152,142,6,EQ2);
+  R(cx,40,108,120,14,4,EQ,EQ2,1);
+  // feet/legs
+  R(cx,128,118,24,22,4,CL,null); R(cx,110,118,20,22,4,CL,null);
+  // torso on bench
+  R(cx,52,93,96,18,6,CL,CL2,.7);
+  // chest muscles
+  cx.beginPath();cx.ellipse(92,100,22,7,0,0,Math.PI*2);cx.fillStyle='rgba(232,93,4,0.13)';cx.fill();
+  // head
+  HEAD(cx,154,99,11,1);
+  // upper arms
+  const ey=86+lift*.28;
+  L(cx,62,98,46,ey,10,SK); L(cx,130,98,154,ey,10,SK);
+  // forearms
+  L(cx,46,ey,44,barY+4,9,SK); L(cx,154,ey,156,barY+4,9,SK);
+  // barbell
+  R(cx,22,barY-2,156,5,2,EQ,EQ2,1);
+  R(cx,10,barY-10,14,20,2,'#333',EQ2,1.5); R(cx,176,barY-10,14,20,2,'#333',EQ2,1.5);
+  R(cx,24,barY-7,10,14,2,OR,null); R(cx,166,barY-7,10,14,2,OR,null);
+  // rack posts faint
+  L(cx,44,barY-18,44,58,2,'#BBA888'); L(cx,156,barY-18,156,58,2,'#BBA888');
+  // motion guide arrow
+  if(lift>5){cx.beginPath();cx.moveTo(100,barY-22);cx.lineTo(100,barY-10);cx.strokeStyle=OR;cx.lineWidth=1.5;cx.setLineDash([3,2]);cx.stroke();cx.setLineDash([]);}
+}
 
-    function updateDisplay() {
-        display.textContent = formatTime(remainingSeconds);
-        const percent = originalTime ? (remainingSeconds / originalTime) * 100 : 100;
-        progressBar.style.width = percent + '%';
-    }
+// PUSH UP
+function pushup(cx,t){
+  cx.clearRect(0,0,200,145);
+  const dip=(1-Math.cos(t))*.5*18;
+  SH(cx,100,136,62,5);
+  L(cx,8,133,192,133,1.5,FL);
+  const by=105+dip;
+  // toes
+  C(cx,20,130,7,CL,null); C(cx,35,130,7,CL,null);
+  // shins/legs
+  L(cx,27,130,58,by+5,11,CL);
+  // body plank angled
+  cx.save();cx.translate(100,by);cx.rotate(-.07);
+  R(cx,-58,-9,116,18,6,CL,CL2,.6);
+  // spine line
+  L(cx,-45,-2,50,-2,1,'rgba(255,255,255,0.08)');
+  cx.restore();
+  // head
+  HEAD(cx,164,by-16+dip*.2,12,1);
+  // hands on floor
+  C(cx,72,130,8,SK,SK2,1.2); C(cx,128,130,8,SK,SK2,1.2);
+  // upper arms from shoulders to hands
+  const sx1=88+dip*.05,sy1=by-5, sx2=112-dip*.05;
+  L(cx,sx1,sy1,72,130,9,SK); L(cx,sx2,sy1,128,130,9,SK);
+  // shoulder dots
+  C(cx,sx1,sy1,5,SK,null); C(cx,sx2,sy1,5,SK,null);
+}
 
-    function startTimer() {
-        if (isRunning) return;
-        const m = parseInt(document.getElementById('min').value) || 0;
-        const s = parseInt(document.getElementById('sec').value) || 0;
-        totalSeconds = m*60 + s;
-        if (totalSeconds <= 0) return alert("Vui lòng nhập thời gian > 0");
-        
-        remainingSeconds = totalSeconds;
-        originalTime = totalSeconds;
-        isRunning = true;
-        status.textContent = "Đang tập... 🔥";
-        initAudio();
-        
-        timerInterval = setInterval(() => {
-            remainingSeconds--;
-            updateDisplay();
-            if (remainingSeconds <= 0) {
-                clearInterval(timerInterval);
-                isRunning = false;
-                status.innerHTML = "✅ HOÀN THÀNH!<br>Chúc mừng bạn!";
-                playBeep(); setTimeout(playBeep,280); setTimeout(playBeep,560);
-                if (navigator.vibrate) navigator.vibrate([300,150,300]);
-            }
-        }, 1000);
-        updateDisplay();
-    }
+// OVERHEAD PRESS
+function ohp(cx,t){
+  cx.clearRect(0,0,200,145);
+  const lift=Math.sin(t)*30, barY=26-lift;
+  SH(cx,100,142,23,5);
+  L(cx,8,140,192,140,1.5,FL);
+  // feet
+  R(cx,68,132,22,9,3,CL,null); R(cx,110,132,22,9,3,CL,null);
+  // shins
+  L(cx,79,130,80,106,11,CL); L(cx,121,130,120,106,11,CL);
+  // knees
+  C(cx,80,106,6,EQ,EQ2,1); C(cx,120,106,6,EQ,EQ2,1);
+  // thighs
+  L(cx,80,106,82,78,12,CL); L(cx,120,106,118,78,12,CL);
+  // torso
+  R(cx,70,50,60,32,8,CL,CL2,.8);
+  // belt
+  R(cx,72,74,56,8,3,EQ,null);
+  HEAD(cx,100,38,13,0);
+  // upper arms (angled up)
+  L(cx,70,60,46,52,10,SK); L(cx,130,60,154,52,10,SK);
+  // forearms up
+  L(cx,46,52,44,barY+5,9,SK); L(cx,154,52,156,barY+5,9,SK);
+  // barbell
+  R(cx,20,barY,160,5,2,EQ,EQ2,1);
+  R(cx,8,barY-9,14,22,2,'#333',EQ2,1.5); R(cx,178,barY-9,14,22,2,'#333',EQ2,1.5);
+  R(cx,22,barY-6,12,16,2,OR,null); R(cx,166,barY-6,12,16,2,OR,null);
+  // effort sparks when lifting
+  if(lift>12){
+    for(let i=0;i<3;i++){cx.beginPath();cx.moveTo(38+i*7,barY-2);cx.lineTo(34+i*6,barY-12);cx.strokeStyle=OR2;cx.lineWidth=1.5;cx.globalAlpha=.5;cx.stroke();}
+    cx.globalAlpha=1;
+  }
+}
 
-    function pauseTimer() {
-        if (isRunning) {
-            clearInterval(timerInterval);
-            isRunning = false;
-            status.textContent = "⏸ Đã tạm dừng";
-        }
-    }
+// LATERAL RAISE
+function lateral(cx,t){
+  cx.clearRect(0,0,200,145);
+  const p=(1-Math.cos(t))*.5; // 0..1
+  SH(cx,100,142,22,5);
+  L(cx,8,140,192,140,1.5,FL);
+  R(cx,74,130,22,10,3,CL,null); R(cx,104,130,22,10,3,CL,null);
+  L(cx,85,130,83,95,12,CL); L(cx,115,130,117,95,12,CL);
+  R(cx,73,50,54,48,8,CL,CL2,.8);
+  HEAD(cx,100,36,13,0);
+  // arms raising - angle from -0.2 to -1.5 rad
+  const ang = -.18 - p*1.35;
+  // left arm
+  cx.save();cx.translate(73,72);cx.rotate(-ang);
+  L(cx,0,0,-32,0,10,SK);
+  C(cx,-32,0,5,SK,null);
+  R(cx,-48,-5,18,10,3,EQ2,EQ,1.5);
+  C(cx,-48,0,5,OR2,null); C(cx,-30,0,5,OR2,null);
+  cx.restore();
+  // right arm
+  cx.save();cx.translate(127,72);cx.rotate(ang+Math.PI);
+  L(cx,0,0,-32,0,10,SK);
+  C(cx,-32,0,5,SK,null);
+  R(cx,-48,-5,18,10,3,EQ2,EQ,1.5);
+  C(cx,-48,0,5,OR2,null); C(cx,-30,0,5,OR2,null);
+  cx.restore();
+  // muscle glow
+  if(p>.4){
+    cx.beginPath();cx.ellipse(100,55,22,8,0,0,Math.PI*2);
+    cx.fillStyle='rgba(232,93,4,.12)';cx.fill();
+  }
+}
 
-    function resetTimer() {
-        clearInterval(timerInterval);
-        isRunning = false;
-        remainingSeconds = totalSeconds || 60;
-        updateDisplay();
-        status.textContent = "Sẵn sàng tập!";
-    }
+// BICEP CURL
+function bcurl(cx,t){
+  cx.clearRect(0,0,200,145);
+  const p=(1-Math.cos(t))*.5;
+  SH(cx,95,142,22,5);
+  L(cx,8,140,192,140,1.5,FL);
+  R(cx,72,130,22,10,3,CL,null); R(cx,102,130,22,10,3,CL,null);
+  L(cx,83,130,82,95,12,CL); L(cx,113,130,115,95,12,CL);
+  R(cx,72,50,52,48,8,CL,CL2,.8);
+  HEAD(cx,98,37,13,1);
+  // left arm static at side
+  L(cx,72,65,56,90,9,SK); L(cx,56,90,54,122,8,SK);
+  C(cx,53,124,6,SK,SK2,1);
+  R(cx,40,120,26,8,2,EQ2,EQ,1.5);
+  C(cx,40,124,5,OR2,null); C(cx,66,124,5,OR2,null);
+  // right arm curling
+  const elx=128,ely=90;
+  L(cx,124,66,elx,ely,9,SK);
+  const fa=-0.25-p*2.15;
+  const fex=elx+Math.cos(fa+Math.PI/2)*36, fey=ely+Math.sin(fa+Math.PI/2)*36;
+  L(cx,elx,ely,fex,fey,8,SK);
+  C(cx,fex,fey,5,SK,SK2,1);
+  // dumbbell
+  R(cx,fex-13,fey-4,26,8,2,EQ2,EQ,1.5);
+  C(cx,fex-13,fey,6,OR2,null); C(cx,fex+13,fey,6,OR2,null);
+  // bicep peak
+  if(p>.55){cx.beginPath();cx.ellipse(130,74,9,5,-0.5,0,Math.PI*2);cx.fillStyle='rgba(232,93,4,.22)';cx.fill();}
+}
 
-    function setPreset(sec) {
-        document.getElementById('min').value = Math.floor(sec/60);
-        document.getElementById('sec').value = sec % 60;
-        resetTimer();
-        switchTab(0);
-    }
+// TRICEP DIP
+function tdip(cx,t){
+  cx.clearRect(0,0,200,145);
+  const dip=(1-Math.cos(t))*.5*26;
+  SH(cx,100,148,28,5);
+  // parallel bars
+  R(cx,46,16,10,105,3,EQ,EQ2,2); R(cx,144,16,10,105,3,EQ,EQ2,2);
+  R(cx,32,14,32,12,4,EQ2,EQ2,1.5); R(cx,136,14,32,12,4,EQ2,EQ2,1.5);
+  const ty=36+dip;
+  // legs hanging
+  L(cx,94,ty+52,76,ty+92,11,CL); L(cx,106,ty+52,124,ty+92,11,CL);
+  L(cx,76,ty+92,78,ty+114,9,CL); L(cx,124,ty+92,122,ty+114,9,CL);
+  C(cx,78,ty+118,7,CL,null); C(cx,122,ty+118,7,CL,null);
+  // torso
+  R(cx,74,ty+8,52,48,8,CL,CL2,.8);
+  HEAD(cx,100,ty-2,13,0);
+  // arms
+  L(cx,74,ty+22,52,ty+4,10,SK); L(cx,126,ty+22,148,ty+4,10,SK);
+  L(cx,52,ty+4,50,22,9,SK); L(cx,148,ty+4,150,22,9,SK);
+  C(cx,50,20,8,SK,SK2,1.2); C(cx,150,20,8,SK,SK2,1.2);
+  // tricep highlight
+  if(dip>8){
+    cx.beginPath();cx.ellipse(52,ty+12,11,5,-0.8,0,Math.PI*2);cx.fillStyle='rgba(232,93,4,.18)';cx.fill();
+    cx.beginPath();cx.ellipse(148,ty+12,11,5,0.8,0,Math.PI*2);cx.fillStyle='rgba(232,93,4,.18)';cx.fill();
+  }
+}
 
-    // === TAB SWITCH ===
-    function switchTab(n) {
-        document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===n));
-        document.getElementById('timer-tab').style.display = n===0 ? 'block' : 'none';
-        document.getElementById('guide-tab').style.display = n===1 ? 'block' : 'none';
-    }
+// CRUNCH
+function crunch(cx,t){
+  cx.clearRect(0,0,200,145);
+  const p=(1-Math.cos(t))*.5;
+  SH(cx,100,138,62,5);
+  L(cx,8,134,192,134,1.5,FL);
+  // legs bent
+  L(cx,48,130,88,106,13,CL); L(cx,88,106,118,130,13,CL);
+  L(cx,62,130,100,104,13,CL); L(cx,100,104,130,130,13,CL);
+  C(cx,48,130,8,CL,null); C(cx,130,130,8,CL,null);
+  // torso rotating up
+  const ang=-0.12-p*.82;
+  const px=148,py=107;
+  cx.save();cx.translate(px,py);cx.rotate(ang);
+  R(cx,-78,-10,84,22,7,CL,CL2,.7);
+  // abs
+  for(let i=0;i<3;i++){L(cx,-50+i*18,-10,-50+i*18,12,.8,'rgba(255,255,255,0.06)');}
+  cx.restore();
+  // head follows torso
+  const hx=px+Math.cos(ang-Math.PI)*52, hy=py+Math.sin(ang-Math.PI)*52-12;
+  HEAD(cx,hx,hy,11,1);
+  // hands behind head
+  L(cx,hx-5,hy,hx-18,hy-8,6,SK); L(cx,hx,hy-1,hx+14,hy-9,6,SK);
+  // abs glow
+  if(p>.38){
+    const mx=px+Math.cos(ang-Math.PI)*28, my=py+Math.sin(ang-Math.PI)*28;
+    cx.beginPath();cx.ellipse(mx,my,20,8,ang,0,Math.PI*2);
+    cx.fillStyle='rgba(232,93,4,.18)';cx.fill();
+  }
+}
 
-    // === USE EXERCISE FOR TIMER ===
-    function useExerciseTimer(seconds, name) {
-        document.getElementById('min').value = Math.floor(seconds/60);
-        document.getElementById('sec').value = seconds % 60;
-        resetTimer();
-        switchTab(0);
-        status.innerHTML = `Đang set cho: <strong>${name}</strong>`;
-        setTimeout(() => status.textContent = "Sẵn sàng tập!", 2500);
-    }
+// PLANK
+function plank(cx,t){
+  cx.clearRect(0,0,200,145);
+  const br=Math.sin(t*.65)*1.3;
+  SH(cx,100,134,68,5);
+  L(cx,8,130,192,130,1.5,FL);
+  // toes
+  C(cx,18,127,8,CL,null); C(cx,30,127,8,CL,null);
+  // legs
+  L(cx,24,128,82,120+br*.3,13,CL);
+  // body
+  R(cx,80,105+br,98,19+br*.5,7,CL,CL2,.7);
+  // forearms flat
+  L(cx,80,128,66,128,11,SK); L(cx,118,128,134,128,11,SK);
+  C(cx,65,128,8,SK,SK2,1); C(cx,135,128,8,SK,SK2,1);
+  // upper arms
+  L(cx,65,128,82,113+br,9,SK); L(cx,135,128,118,113+br,9,SK);
+  HEAD(cx,165,107+br*.5,11,1);
+  // alignment guide dashed
+  cx.beginPath();cx.moveTo(18,118);cx.lineTo(165,108);
+  cx.strokeStyle='rgba(232,93,4,.25)';cx.lineWidth=1.2;cx.setLineDash([4,3]);cx.stroke();cx.setLineDash([]);
+  // breathing pulse dot
+  cx.beginPath();cx.arc(100,115+br*.5,3.5,0,Math.PI*2);
+  cx.fillStyle=`rgba(232,93,4,${.3+Math.abs(br)*.12})`;cx.fill();
+}
 
-    // Phím tắt
-    document.addEventListener('keydown', e => {
-        if (e.key === " ") { e.preventDefault(); isRunning ? pauseTimer() : (remainingSeconds > 0 && startTimer()); }
-        if (e.key.toLowerCase() === "r") resetTimer();
-    });
+// BARBELL SQUAT
+function squat(cx,t){
+  cx.clearRect(0,0,200,145);
+  const p=(1-Math.cos(t))*.5, dn=p*36;
+  SH(cx,100,145,28,6);
+  L(cx,8,141,192,141,1.5,FL);
+  // feet
+  R(cx,60,134,26,8,3,CL,null); R(cx,114,134,26,8,3,CL,null);
+  // ankles
+  C(cx,73,133,5,EQ,EQ2,1); C(cx,127,133,5,EQ,EQ2,1);
+  // calves
+  const ca=.14*p;
+  L(cx,73,133,76+ca*12,103+dn,11,CL); L(cx,127,133,124-ca*12,103+dn,11,CL);
+  C(cx,76+ca*12,103+dn,7,EQ,EQ2,1); C(cx,124-ca*12,103+dn,7,EQ,EQ2,1);
+  // thighs (spread out when squatting)
+  L(cx,76+ca*12,103+dn,88-p*10,72+dn*.28,12,CL); L(cx,124-ca*12,103+dn,112+p*10,72+dn*.28,12,CL);
+  const hy=72+dn*.28;
+  // lean
+  const lean=p*.16;
+  cx.save();cx.translate(100,hy);cx.rotate(lean);
+  R(cx,-23,-45,46,50,8,CL,CL2,.8);
+  R(cx,-18,-5,36,8,3,EQ,null); // belt
+  cx.restore();
+  // head
+  const thx=100+Math.sin(lean)*45, thy=hy-Math.cos(lean)*45;
+  HEAD(cx,thx,thy-14,12,0);
+  // barbell
+  const barY=hy-36;
+  R(cx,14,barY-2,172,5,2,EQ,EQ2,1);
+  R(cx,6,barY-11,14,20,2,'#333',EQ2,1.5); R(cx,180,barY-11,14,20,2,'#333',EQ2,1.5);
+  R(cx,20,barY-8,12,14,2,OR,null); R(cx,168,barY-8,12,14,2,OR,null);
+  // arms on bar
+  L(cx,thx-22+lean*18,barY,thx-40+lean*16,barY+13,8,SK);
+  L(cx,thx+22+lean*18,barY,thx+40+lean*16,barY+13,8,SK);
+  // quad glow
+  if(p>.35){
+    cx.beginPath();cx.ellipse(80+ca*10,112+dn*.7,14,9,.4,0,Math.PI*2);cx.fillStyle='rgba(232,93,4,.13)';cx.fill();
+    cx.beginPath();cx.ellipse(120-ca*10,112+dn*.7,14,9,-.4,0,Math.PI*2);cx.fillStyle='rgba(232,93,4,.13)';cx.fill();
+  }
+}
 
-    // Khởi tạo
-    updateDisplay();
+// LUNGES
+function lunge(cx,t){
+  cx.clearRect(0,0,200,145);
+  const p=(1-Math.cos(t))*.5, dn=p*22;
+  SH(cx,88,146,48,6);
+  L(cx,8,142,192,142,1.5,FL);
+  // back foot (near floor as knee dips)
+  C(cx,30,136,7,CL,null);
+  L(cx,30,136,56,108+dn,10,CL); // back shin going diag
+  L(cx,56,108+dn,78,72+dn*.28,11,CL); // back thigh
+  C(cx,56,108+dn,7,EQ,EQ2,1);
+  // front foot
+  R(cx,124,134,30,9,3,CL,null);
+  L(cx,139,134,130,100+dn*.08,11,CL); // front shin
+  L(cx,130,100+dn*.08,108,72+dn*.2,11,CL); // front thigh
+  C(cx,130,100+dn*.08,7,EQ,EQ2,1);
+  // torso (upright)
+  const tx=94, ty=72+dn*.28;
+  R(cx,tx-22,ty-44,44,50,8,CL,CL2,.8);
+  R(cx,tx-16,ty-5,32,9,3,EQ,null);
+  HEAD(cx,tx,ty-58,12,1);
+  // arms with dumbbells
+  L(cx,tx-22,ty-30,tx-42,ty-14,9,SK); L(cx,tx+22,ty-30,tx+42,ty-14,9,SK);
+  C(cx,tx-43,ty-13,5,SK,SK2,1); C(cx,tx+43,ty-13,5,SK,SK2,1);
+  R(cx,tx-58,ty-18,26,10,2,EQ2,EQ,1.5);
+  R(cx,tx+32,ty-18,26,10,2,EQ2,EQ,1.5);
+  C(cx,tx-58,ty-13,6,OR2,null); C(cx,tx-32,ty-13,6,OR2,null);
+  C(cx,tx+32,ty-13,6,OR2,null); C(cx,tx+58,ty-13,6,OR2,null);
+  // front quad glow
+  if(p>.28){cx.beginPath();cx.ellipse(118,90+dn*.2,12,20,.3,0,Math.PI*2);cx.fillStyle='rgba(232,93,4,.14)';cx.fill();}
+}
+
+// Map canvas IDs to draw functions
+const draws=[bench,pushup,ohp,lateral,bcurl,tdip,crunch,plank,squat,lunge];
+const speeds=[1.4,1.65,1.3,1.5,1.5,1.42,1.72,0.6,1.22,1.32];
+let T=0;
+function loop(){
+  T+=.026;
+  draws.forEach((fn,i)=>{
+    const c=document.getElementById('c'+i);
+    if(c) fn(c.getContext('2d'),T*speeds[i]);
+  });
+  requestAnimationFrame(loop);
+}
+loop();
+
+// ===== NAV =====
+function showSec(id,btn){
+  document.querySelectorAll('.msec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.mb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('s-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ===== SOUND (Web Audio API) =====
+let sndOn=true, aC=null;
+function getAC(){if(!aC)aC=new(window.AudioContext||window.webkitAudioContext)();return aC;}
+function tone(f,d,type,vol,del){
+  try{const a=getAC(),o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);o.type=type||'sine';
+    o.frequency.value=f;g.gain.setValueAtTime(0,a.currentTime+(del||0));
+    g.gain.linearRampToValueAtTime(vol,a.currentTime+(del||0)+.01);
+    g.gain.exponentialRampToValueAtTime(.001,a.currentTime+(del||0)+d);
+    o.start(a.currentTime+(del||0));o.stop(a.currentTime+(del||0)+d+.05);
+  }catch(e){}
+}
+function playTick(){if(sndOn)tone(880,.07,'sine',.12);}
+function playWarn(){if(sndOn){tone(660,.1,'square',.2);tone(440,.1,'square',.18,.13);}}
+function playDone(){if(sndOn){tone(523,.12,'sine',.3);tone(659,.12,'sine',.32,.16);tone(784,.22,'sine',.38,.32);tone(1047,.38,'sine',.32,.55);}}
+function playGo(){if(sndOn){tone(440,.07,'square',.2);tone(880,.18,'sine',.32,.1);}}
+function playRestEnd(){if(sndOn){tone(784,.14,'sine',.38);tone(784,.14,'sine',.38,.2);tone(1047,.3,'sine',.42,.38);}}
+function toggleSnd(){
+  sndOn=!sndOn;
+  const b=document.getElementById('sndBtn');
+  b.textContent=sndOn?'🔊 BẬT':'🔇 TẮT';
+  b.classList.toggle('on',sndOn);
+  if(sndOn)tone(660,.1,'sine',.18);
+}
+
+// ===== TIMER =====
+const CIRC=2*Math.PI*42; // r=42
+let sec=0,maxSec=0,running=false,tInt=null,totalSec=0,totInt=null;
+let curSets=4,doneSets=0,restInt=null;
+
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function setArc(s,max){
+  const arc=document.getElementById('tArc');
+  const p=max>0?s/max:0;
+  arc.style.strokeDashoffset=CIRC*(1-p);
+  const w=s<=5&&s>0;
+  arc.className='t-arc'+(w?' warn':'');
+  const td=document.getElementById('tDisp');
+  td.className='tt'+(w?' warn':'');
+}
+function updTimer(s){document.getElementById('tDisp').textContent=fmt(s);setArc(s,maxSec);}
+
+function setP(s,el){
+  if(running)return;
+  sec=s;maxSec=s;updTimer(s);
+  document.querySelectorAll('.prs').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('tPhase').textContent='READY';
+}
+function addT(s){sec+=s;if(sec>maxSec)maxSec=sec;updTimer(sec);}
+function toggleTimer(){if(running)pauseT();else startT();}
+
+function startT(){
+  if(sec<=0){sec=45;maxSec=45;}
+  running=true;
+  document.getElementById('startBtn').textContent='⏸ PAUSE';
+  document.getElementById('tPhase').textContent='ACTIVE';
+  playGo();
+  if(!totInt)totInt=setInterval(()=>{totalSec++;document.getElementById('totalDisp').textContent=fmt(totalSec);},1000);
+  tInt=setInterval(()=>{
+    sec--;updTimer(sec);
+    if(sec<=5&&sec>0)playWarn();
+    else if(sec>0&&sec%10===0)playTick();
+    if(sec<=0){clearInterval(tInt);running=false;document.getElementById('startBtn').textContent='▶ BẮT ĐẦU';document.getElementById('tPhase').textContent='DONE!';onDone();}
+  },1000);
+}
+function pauseT(){clearInterval(tInt);running=false;document.getElementById('startBtn').textContent='▶ TIẾP TỤC';document.getElementById('tPhase').textContent='PAUSED';}
+function resetT(){clearInterval(tInt);running=false;sec=maxSec;updTimer(sec);document.getElementById('startBtn').textContent='▶ BẮT ĐẦU';document.getElementById('tPhase').textContent='READY';}
+
+function onDone(){
+  doneSets++;
+  const d=document.getElementById('d'+doneSets);if(d)d.classList.add('done');
+  const pct=Math.round(doneSets/curSets*100);
+  document.getElementById('pFill').style.width=pct+'%';
+  document.getElementById('pPct').textContent=pct+'%';
+  document.getElementById('sInfo').textContent=doneSets+'/'+curSets;
+  document.getElementById('ceSub').textContent='Hiệp '+doneSets+'/'+curSets+' ✓ Hoàn thành!';
+  flashFx();playDone();
+  if(doneSets<curSets)showRest(60);
+  else{toast('🏆 Hoàn thành tất cả hiệp! Xuất sắc!');doneSets=0;}
+}
+
+function showRest(s){
+  const ov=document.getElementById('restOv'),dn=document.getElementById('restN');
+  ov.classList.add('on');let t=s;dn.textContent=t;
+  restInt=setInterval(()=>{
+    t--;dn.textContent=t;
+    if(t<=3&&t>0)playWarn();
+    if(t<=0){clearInterval(restInt);ov.classList.remove('on');playRestEnd();toast('💪 Hiệp tiếp theo! Nào!');sec=maxSec;updTimer(sec);startT();}
+  },1000);
+}
+function skipRest(){clearInterval(restInt);document.getElementById('restOv').classList.remove('on');sec=maxSec;updTimer(sec);startT();}
+
+function startEx(name,dur,sets,reps){
+  clearInterval(tInt);running=false;
+  doneSets=0;curSets=sets;
+  for(let i=1;i<=4;i++){const d=document.getElementById('d'+i);d.classList.remove('done');d.style.display=i<=sets?'flex':'none';d.textContent=i;}
+  document.getElementById('sInfo').textContent='0/'+sets;
+  document.getElementById('pFill').style.width='0%';
+  document.getElementById('pPct').textContent='0%';
+  document.getElementById('ceName').textContent=name;
+  document.getElementById('ceSub').textContent=sets+' hiệp × '+(dur>0?dur+'s':reps+' lần');
+  const s=dur>0?dur:reps*3;sec=s;maxSec=s;updTimer(s);
+  document.getElementById('startBtn').textContent='▶ BẮT ĐẦU';
+  document.getElementById('tPhase').textContent='READY';
+  toast('⚡ '+name+' — Sẵn sàng!');playGo();
+  if(window.innerWidth<980)document.querySelector('.tp').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function flashFx(){const f=document.getElementById('flash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go');}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200);}
+
+setArc(0,1);
 </script>
 </body>
 </html>
